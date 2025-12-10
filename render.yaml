@@ -43,10 +43,7 @@ services:
     branch: master
     envVars:
       - key: VITE_API_BASE_URL
-        fromService:
-          type: web
-          name: normativas-backend
-          property: url
+        value: https://cambiar-esto-por-la-url-del-backend.onrender.com
 
 databases:
   - name: normativas-db
