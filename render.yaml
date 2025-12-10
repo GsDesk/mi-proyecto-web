@@ -3,7 +3,8 @@ services:
   - type: web
     name: normativas-backend
     env: docker
-    dockerContext: ./backend
+    dockerContext: .
+    dockerfilePath: ./backend/Dockerfile
     plan: free
     branch: master
     envVars:
@@ -38,7 +39,8 @@ services:
   - type: web
     name: normativas-frontend
     env: docker
-    dockerContext: ./frontend
+    dockerContext: .
+    dockerfilePath: ./frontend/Dockerfile
     plan: free
     branch: master
     envVars:
