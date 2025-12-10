@@ -2,7 +2,7 @@
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 WORKDIR /code
-COPY requirements.txt /code/requirements.txt
+COPY backend/requirements.txt /code/requirements.txt
 
 # Install build deps and dos2unix to normalize line endings, then install pip deps
 RUN apt-get update \
@@ -10,7 +10,7 @@ RUN apt-get update \
 	&& pip install --upgrade pip \
 	&& pip install -r /code/requirements.txt
 
-COPY . /code
+COPY backend/ /code
 RUN if [ -f /code/entrypoint.sh ]; then dos2unix /code/entrypoint.sh || true; fi \
 	&& chmod +x /code/entrypoint.sh || true
 EXPOSE 8000
