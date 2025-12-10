@@ -1,9 +1,14 @@
 ﻿import axios from 'axios';
 
 // Resolve API base safely: prefer Vite env, then fallback to process.env if available, finally a hardcoded default.
-const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL)
+let API_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL)
   || (typeof process !== 'undefined' && process.env && process.env.API_URL)
   || 'http://localhost:8000/api';
+
+// Ensure it ends with /api (Render builds often provide just the host URL)
+if (!API_BASE.endsWith('/api')) {
+  API_BASE += '/api';
+}
 
 const instance = axios.create({
   baseURL: API_BASE,

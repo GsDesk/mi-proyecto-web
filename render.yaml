@@ -1,0 +1,57 @@
+services:
+  # Python Backend Service
+  - type: web
+    name: normativas-backend
+    env: docker
+    dockerContext: ./backend
+    plan: free
+    branch: master
+    envVars:
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: normativas-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: normativas-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: normativas-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: normativas-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: normativas-db
+          property: port
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: '0'
+      - key: ALLOWED_HOSTS
+        value: '*'
+
+  # React Frontend Service
+  - type: web
+    name: normativas-frontend
+    env: docker
+    dockerContext: ./frontend
+    plan: free
+    branch: master
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: normativas-backend
+          property: url
+
+databases:
+  - name: normativas-db
+    plan: free
+    databaseName: normativas
+    user: normativas_user
+
+version: "1"
