@@ -3,7 +3,7 @@
 // Resolve API base safely: prefer Vite env, then fallback to process.env if available, finally a hardcoded default.
 let API_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL)
   || (typeof process !== 'undefined' && process.env && process.env.API_URL)
-  || 'http://localhost:8000/api';
+  || 'https://normativas-backend.onrender.com/api';
 
 // Ensure it ends with /api (Render builds often provide just the host URL)
 if (!API_BASE.endsWith('/api')) {
