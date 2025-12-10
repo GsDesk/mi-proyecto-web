@@ -24,16 +24,32 @@ export default function Register({ navigation }) {
       showToast('Registro', 'Usuario creado con éxito', 'success');
       navigation.navigate('Login');
     } catch (e) {
+      console.error('Registration error:', e);
       let msg = 'No se pudo registrar el usuario';
-      if (e?.response?.data) {
-        if (e.response.data.detail) {
-          msg = e.response.data.detail;
+
+      if (e.response) {
+        // Server responded with a status code outside 2xx
+        if (e.response.data) {
+          if (e.response.data.detail) {
+            msg = e.response.data.detail;
+          } else if (typeof e.response.data === 'object') {
+            // Join all field errors
+            const errors = Object.values(e.response.data).flat();
+            if (errors.length > 0) msg = errors.join('. ');
+            else msg = JSON.stringify(e.response.data);
+          } else {
+            msg = `Error ${e.response.status}: ${e.response.statusText}`;
+          }
         } else {
-          // Join all field errors
-          const errors = Object.values(e.response.data).flat();
-          if (errors.length > 0) msg = errors.join('. ');
+          msg = `Error ${e.response.status}: ${e.response.statusText}`;
         }
+      } else if (e.request) {
+        // Request was made but no response received (Network Error)
+        msg = 'Error de conexión: No se pudo contactar al servidor. Verifica tu internet o que el backend esté activo.';
+      } else {
+        msg = e.message;
       }
+
       setError(msg);
       showToast('Error', msg, 'error');
     }
@@ -53,12 +69,12 @@ export default function Register({ navigation }) {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label text-secondary small">Usuario</label>
+                  <label className="form-label text-secondary small">Usuario <span className="text-muted" style={{ fontSize: '0.8em' }}>(Sin espacios)</span></label>
                   <input
                     className="form-control form-control-lg"
-                    placeholder="Elige un nombre de usuario"
+                    placeholder="Ej: johelpilacuan"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => setUsername(e.target.value.replace(/\s/g, ''))}
                   />
                 </div>
 
