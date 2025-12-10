@@ -16,8 +16,18 @@ class RegisterSerializer(serializers.ModelSerializer):
 		if User.objects.filter(username=validated_data['username']).exists():
 			raise serializers.ValidationError({"username": ["Este nombre de usuario ya está en uso."]})
 		
+		# User creation triggers a post_save signal that creates a Profile automatically.
+		# So we just need to update that profile with the selected role.
 		user = User.objects.create_user(username=validated_data['username'], password=validated_data['password'])
-		Profile.objects.create(user=user, role=role)
+		
+		# Update the auto-created profile
+		if hasattr(user, 'profile'):
+			user.profile.role = role
+			user.profile.save()
+		else:
+			# Fallback if signal failed/didn't run for some reason
+			Profile.objects.create(user=user, role=role)
+			
 		return user
 
 
