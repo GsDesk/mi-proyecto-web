@@ -176,9 +176,13 @@ from django.http import FileResponse, Http404
 import os
 from django.conf import settings
 
+from django.views.decorators.clickjacking import xframe_options_exempt
+from django.utils.decorators import method_decorator
+
 class DownloadFileView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @method_decorator(xframe_options_exempt)
     def get(self, request, format=None):
         path = request.GET.get('path', '')
         # Security: Prevent traversing up directories
