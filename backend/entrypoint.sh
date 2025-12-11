@@ -18,7 +18,6 @@ while True:
 PY
 
 # Apply migrations
-python manage.py makemigrations
 python manage.py migrate --noinput
 
 # Create superuser if credentials provided (optional)
