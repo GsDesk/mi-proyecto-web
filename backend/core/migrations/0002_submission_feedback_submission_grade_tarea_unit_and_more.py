@@ -25,7 +25,12 @@ class Migration(migrations.Migration):
             name='unit',
             field=models.IntegerField(choices=[(1, 'Unidad 1'), (2, 'Unidad 2'), (3, 'Unidad 3'), (4, 'Unidad 4')], default=1),
         ),
-        migrations.DeleteModel(
-            name='Normativa',
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.DeleteModel(
+                    name='Normativa',
+                ),
+            ],
+            database_operations=[],
         ),
     ]
