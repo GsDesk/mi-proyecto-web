@@ -15,7 +15,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 	def validate(self, data):
 		if data.get('role') == 'teacher':
 			# SECURITY CHECK: Master key for teachers
-			if data.get('access_code') != 'DOCENTE-GOLDEN-2025':
+			import os
+			secret_code = os.environ.get('TEACHER_SECRET', 'DOCENTE-GOLDEN-2025')
+			if data.get('access_code') != secret_code:
 				raise serializers.ValidationError({"access_code": "¡Código de acceso denegado! No tienes autorización para ser Docente."})
 		return data
 
