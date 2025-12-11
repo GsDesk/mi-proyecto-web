@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList } from 'react-native';
+import showToast from '../utils/toast';
 
 // Simple Aula Virtual screen: stores data in localStorage for demo purposes
 export default function Aula({ navigation }) {
@@ -76,6 +77,28 @@ export default function Aula({ navigation }) {
 
     const activeUnitData = units.find(u => u.id === currentUnit);
 
+    const handleDownloadReport = async () => {
+      if (typeof window === 'undefined') return;
+      try {
+        showToast('Generando informe...', 'Por favor espera', 'info');
+        // Import dynamically to avoid top-level require issues
+        const { default: api } = await import('../services/api');
+        const response = await api.get('/student/report/', { responseType: 'blob' });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Informe_Actividades_${username}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        showToast('Éxito', 'Informe descargado correctamente', 'success');
+      } catch (error) {
+        console.error(error);
+        showToast('Error', 'No se pudo generar el informe', 'error');
+      }
+    };
+
     return (
       <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', paddingTop: '80px' }}>
         {/* Course Header */}
@@ -104,40 +127,12 @@ export default function Aula({ navigation }) {
             <ul className="nav nav-pills py-2">
               <li className="nav-item"><a className="nav-link active bg-primary text-white rounded-pill" href="#" onClick={(e) => e.preventDefault()}>Curso</a></li>
               <li className="nav-item"><a className="nav-link text-secondary" href="#" onClick={(e) => { e.preventDefault(); navigation.navigate('Participantes'); }}>Participantes</a></li>
-  const handleDownloadReport = async () => {
-    if (typeof window === 'undefined') return;
-              try {
-                showToast('Generando informe...', 'Por favor espera', 'info');
-              // Import dynamically to avoid top-level require issues or use global axios if imported
-              const { default: api } = await import('../services/api');
-              const response = await api.get('/student/report/', {responseType: 'blob' });
-
-              const url = window.URL.createObjectURL(new Blob([response.data]));
-              const link = document.createElement('a');
-              link.href = url;
-              link.setAttribute('download', `Informe_Actividades_${username}.pdf`);
-              document.body.appendChild(link);
-              link.click();
-              link.parentNode.removeChild(link);
-              showToast('Éxito', 'Informe descargado correctamente', 'success');
-    } catch (error) {
-                console.error(error);
-              showToast('Error', 'No se pudo generar el informe', 'error');
-    }
-  };
-
-              if (isWeb) {
-    // ... code truncated ...
-
-    // In the return JSX, inside the nav-pills list
-// ...
               <li className="nav-item"><a className="nav-link text-secondary" href="#" onClick={(e) => { e.preventDefault(); navigation.navigate('Calificaciones'); }}>Calificaciones</a></li>
               <li className="nav-item">
                 <a className="nav-link text-secondary" href="#" onClick={(e) => { e.preventDefault(); handleDownloadReport(); }}>
                   📥 Descargar Informe
                 </a>
               </li>
-              {/* Competencias removed as requested */}
             </ul>
           </div>
         </div>
