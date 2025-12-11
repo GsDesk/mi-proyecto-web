@@ -53,6 +53,8 @@ export default function TaskSubmissions({ navigation, route }) {
         }
     }
 
+    const [previewFile, setPreviewFile] = useState(null);
+
     const getDownloadUrl = (fileUrl) => {
         if (!fileUrl) return '#';
         let path = fileUrl;
@@ -61,6 +63,10 @@ export default function TaskSubmissions({ navigation, route }) {
         }
         // API_BASE already includes '/api'
         return `${API_BASE}/download/?path=${path}`;
+    };
+
+    const getPreviewUrl = (fileUrl) => {
+        return `${getDownloadUrl(fileUrl)}&preview=true`;
     };
 
     if (typeof document !== 'undefined') {
@@ -94,14 +100,20 @@ export default function TaskSubmissions({ navigation, route }) {
                                                 <h5 className="fw-bold text-white mb-1">Estudiante: <span className="text-primary">{sub.student}</span></h5>
                                                 <p className="text-muted small mb-2">Entregado: {new Date(sub.submitted_at).toLocaleString()}</p>
                                                 {sub.file && (
-                                                    <div className="mb-3">
+                                                    <div className="mb-3 d-flex gap-2">
+                                                        <button
+                                                            className="btn btn-sm btn-info rounded-pill text-white"
+                                                            onClick={() => setPreviewFile(getPreviewUrl(sub.file))}
+                                                        >
+                                                            👁️ Visualizar
+                                                        </button>
                                                         <a
                                                             href={getDownloadUrl(sub.file)}
                                                             target="_blank"
-                                                            className="btn btn-sm btn-outline-info rounded-pill"
+                                                            className="btn btn-sm btn-outline-light rounded-pill"
                                                             rel="noreferrer"
                                                         >
-                                                            📄 Ver Archivo Entregado
+                                                            ⬇️ Descargar
                                                         </a>
                                                     </div>
                                                 )}
@@ -158,6 +170,23 @@ export default function TaskSubmissions({ navigation, route }) {
                             ))}
                         </div>
                     )}
+
+                    {/* Preview Modal */}
+                    {previewFile && (
+                        <div style={webStyles.modalOverlay}>
+                            <div style={webStyles.modalContent}>
+                                <div className="d-flex justify-content-between align-items-center mb-2 px-2">
+                                    <h5 className="text-dark mb-0">Vista Previa</h5>
+                                    <button className="btn btn-danger btn-sm" onClick={() => setPreviewFile(null)}>Cerrar ✕</button>
+                                </div>
+                                <iframe
+                                    src={previewFile}
+                                    style={webStyles.iframe}
+                                    title="Vista Previa"
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -172,7 +201,7 @@ export default function TaskSubmissions({ navigation, route }) {
                 renderItem={({ item, index }) => (
                     <View style={styles.card}>
                         <Text style={styles.student}>{item.student}</Text>
-                        {item.file && <Text style={{ color: 'blue' }} onPress={() => Linking.openURL(item.file)}>Ver Archivo</Text>}
+                        {item.file && <Text style={{ color: 'blue' }} onPress={() => Linking.openURL(getDownloadUrl(item.file))}>Descargar Archivo</Text>}
                         <TextInput
                             placeholder="Nota"
                             value={item.localGrade}
@@ -200,6 +229,37 @@ export default function TaskSubmissions({ navigation, route }) {
         </View>
     );
 }
+
+const webStyles = {
+    modalOverlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.85)',
+        zIndex: 1050,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '20px'
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        width: '90%',
+        height: '90%',
+        borderRadius: '8px',
+        padding: '10px',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    iframe: {
+        width: '100%',
+        flex: 1,
+        border: 'none',
+        borderRadius: '4px'
+    }
+};
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16 },

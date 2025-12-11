@@ -190,6 +190,8 @@ class DownloadFileView(APIView):
         print(f"DEBUG DOWNLOAD: Full path: {file_path}")
         
         if os.path.exists(file_path) and os.path.isfile(file_path):
-            return FileResponse(open(file_path, 'rb'), as_attachment=True)
+            # Check for preview mode
+            is_preview = request.GET.get('preview') == 'true'
+            return FileResponse(open(file_path, 'rb'), as_attachment=not is_preview)
         
         raise Http404(f"Archivo no encontrado: {file_path}")
