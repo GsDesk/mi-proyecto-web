@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, Linking } from 'react-native';
-import axios from '../services/api';
+import axios, { API_BASE } from '../services/api';
 import BackButton from '../components/BackButton.jsx';
 
 export default function Tareas({ navigation, route }) {
@@ -80,7 +80,7 @@ export default function Tareas({ navigation, route }) {
                             if (!item.attached_file) return '#';
                             let path = item.attached_file;
                             if (path.includes('/media/')) path = path.split('/media/')[1];
-                            return `${window.location.origin}/api/download/?path=${path}`;
+                            return `${API_BASE}/download/?path=${path}`;
                           })()}
                           target="_blank"
                           rel="noreferrer"
