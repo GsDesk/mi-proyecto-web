@@ -26,4 +26,5 @@ urlpatterns = [
     path('tareas/<int:pk>/submissions/', views.TaskSubmissionsList.as_view(), name='task-submissions'),
     path('submissions/<int:pk>/grade/', views.SubmissionGradeUpdate.as_view(), name='grade-submission'),
     path('my-grades/', views.MySubmissionsList.as_view(), name='my-grades'),
+    path('media/<path:path>', views.DownloadFileView.as_view(), name='download-file'),
 ]
