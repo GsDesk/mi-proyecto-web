@@ -11,18 +11,25 @@ export default function SubmitTarea({ route, navigation }) {
 
   React.useEffect(() => {
     if (typeof document !== 'undefined') {
-      let input = document.getElementById('submit-file-input');
-      if (!input) {
-        input = document.createElement('input');
-        input.type = 'file';
-        input.id = 'submit-file-input';
-        input.style.display = 'none';
-        input.onchange = (ev) => {
-          const f = ev.target.files[0];
-          setFile(f);
-        };
-        document.body.appendChild(input);
-      }
+      const inputId = 'submit-file-input';
+      // Always remove existing input to ensure fresh binding
+      const existing = document.getElementById(inputId);
+      if (existing) existing.remove();
+
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.id = inputId;
+      input.style.display = 'none';
+      input.onchange = (ev) => {
+        if (ev.target.files && ev.target.files[0]) {
+          setFile(ev.target.files[0]);
+        }
+      };
+      document.body.appendChild(input);
+
+      return () => {
+        if (input) input.remove();
+      };
     }
   }, []);
 
