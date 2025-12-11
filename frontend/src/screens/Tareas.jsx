@@ -76,7 +76,12 @@ export default function Tareas({ navigation, route }) {
                       {item.attached_file && (
                         <a
                           className="btn btn-sm btn-outline-light rounded-pill"
-                          href={item.attached_file.startsWith('http') ? item.attached_file : `${window.location.origin}/api/download/?path=${item.attached_file.replace(/^\/?media\//, '')}`}
+                          href={(() => {
+                            if (!item.attached_file) return '#';
+                            let path = item.attached_file;
+                            if (path.includes('/media/')) path = path.split('/media/')[1];
+                            return `${window.location.origin}/api/download/?path=${path}`;
+                          })()}
                           target="_blank"
                           rel="noreferrer"
                         >

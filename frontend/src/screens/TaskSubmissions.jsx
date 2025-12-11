@@ -53,6 +53,16 @@ export default function TaskSubmissions({ navigation, route }) {
         }
     }
 
+    const getDownloadUrl = (fileUrl) => {
+        if (!fileUrl) return '#';
+        // Extract the path after /media/ regardless of whether it's absolute or relative
+        let path = fileUrl;
+        if (fileUrl.includes('/media/')) {
+            path = fileUrl.split('/media/')[1];
+        }
+        return `${window.location.origin}/api/download/?path=${path}`;
+    };
+
     if (typeof document !== 'undefined') {
         return (
             <div className="min-vh-100" style={{ background: 'var(--bg-dark)', paddingTop: '80px' }}>
@@ -86,7 +96,7 @@ export default function TaskSubmissions({ navigation, route }) {
                                                 {sub.file && (
                                                     <div className="mb-3">
                                                         <a
-                                                            href={sub.file.startsWith('http') ? sub.file : `${window.location.origin}/api/download/?path=${sub.file.replace(/^\/?media\//, '')}`}
+                                                            href={getDownloadUrl(sub.file)}
                                                             target="_blank"
                                                             className="btn btn-sm btn-outline-info rounded-pill"
                                                             rel="noreferrer"
