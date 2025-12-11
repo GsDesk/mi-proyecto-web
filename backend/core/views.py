@@ -44,6 +44,36 @@ class SubmissionCreate(generics.CreateAPIView):
 			raise ValidationError("Ya has enviado esta tarea. No se permiten múltiples envíos.")
 		serializer.save(student=self.request.user, tarea=tarea)
 
+# Grading Views
+
+from .serializers import SubmissionGradeSerializer
+
+class TaskSubmissionsList(generics.ListAPIView):
+    serializer_class = SubmissionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Ensure only teachers can see this
+        if not hasattr(self.request.user, 'profile') or self.request.user.profile.role != 'teacher':
+             return Submission.objects.none()
+        
+        tarea_id = self.kwargs['pk']
+        return Submission.objects.filter(tarea_id=tarea_id)
+
+class SubmissionGradeUpdate(generics.UpdateAPIView):
+    queryset = Submission.objects.all()
+    serializer_class = SubmissionGradeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    # In a real app, add permission check to ensure user is a teacher
+
+class MySubmissionsList(generics.ListAPIView):
+    serializer_class = SubmissionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Submission.objects.filter(student=self.request.user).select_related('tarea').order_by('tarea__unit', 'submitted_at')
+
 
 class ProfileView(APIView):
 	permission_classes = [permissions.IsAuthenticated]

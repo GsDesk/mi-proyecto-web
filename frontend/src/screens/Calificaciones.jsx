@@ -1,14 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import BackButton from '../components/BackButton.jsx';
+import axios from '../services/api';
 
 export default function Calificaciones({ navigation }) {
-    // Mock data for grades
-    const grades = [
-        { id: 1, activity: 'Tarea 1: Ensayo sobre Metodologías', grade: '9.5/10', feedback: 'Excelente trabajo, buena argumentación.' },
-        { id: 2, activity: 'Tarea 2: Mapa Conceptual RUP', grade: '8.0/10', feedback: 'Buen diseño, faltaron algunos detalles en la fase de transición.' },
-        { id: 3, activity: 'Examen Unidad 1', grade: '10/10', feedback: 'Perfecto.' },
-    ];
+    const [grades, setGrades] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchGrades = async () => {
+            try {
+                const res = await axios.get('/my-grades/');
+                setGrades(res.data);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchGrades();
+    }, []);
+
+    // Group by Unit
+    const grouped = { 1: [], 2: [], 3: [], 4: [] };
+    grades.forEach(g => {
+        const u = g.unit || 1; // Default to 1 if missing
+        if (!grouped[u]) grouped[u] = [];
+        grouped[u].push(g);
+    });
 
     if (typeof document !== 'undefined') {
         return (
@@ -19,28 +37,57 @@ export default function Calificaciones({ navigation }) {
                         <button className="btn btn-outline-light rounded-pill" onClick={() => navigation.goBack()}>← Regresar</button>
                     </div>
 
-                    <div className="glass-card p-4">
-                        <div className="table-responsive">
-                            <table className="table table-dark table-hover mb-0" style={{ background: 'transparent' }}>
-                                <thead>
-                                    <tr>
-                                        <th scope="col" className="text-secondary text-uppercase small">Actividad</th>
-                                        <th scope="col" className="text-secondary text-uppercase small">Calificación</th>
-                                        <th scope="col" className="text-secondary text-uppercase small">Retroalimentación</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {grades.map((g) => (
-                                        <tr key={g.id}>
-                                            <td className="fw-bold text-white">{g.activity}</td>
-                                            <td><span className="badge bg-primary rounded-pill">{g.grade}</span></td>
-                                            <td className="text-secondary">{g.feedback}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    {loading ? (
+                        <div className="text-white text-center">Cargando...</div>
+                    ) : (
+                        Object.keys(grouped).map(unitId => {
+                            const unitGrades = grouped[unitId];
+                            if (unitGrades.length === 0) return null;
+
+                            return (
+                                <div className="mb-5 animate__animated animate__fadeIn" key={unitId}>
+                                    <div className="d-flex align-items-center mb-3">
+                                        <div className="badge bg-primary rounded-circle p-3 me-3 fs-4">{unitId}</div>
+                                        <h3 className="fw-bold text-white mb-0">Unidad {unitId}</h3>
+                                    </div>
+                                    <div className="glass-card p-4">
+                                        <div className="table-responsive">
+                                            <table className="table table-dark table-hover mb-0" style={{ background: 'transparent' }}>
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col" className="text-secondary text-uppercase small">Actividad</th>
+                                                        <th scope="col" className="text-secondary text-uppercase small">Calificación</th>
+                                                        <th scope="col" className="text-secondary text-uppercase small">Retroalimentación</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {unitGrades.map((g) => (
+                                                        <tr key={g.id}>
+                                                            <td className="fw-bold text-white">{g.tarea_title}</td>
+                                                            <td>
+                                                                {g.grade ? (
+                                                                    <span className={`badge rounded-pill ${parseFloat(g.grade) >= 7 ? 'bg-success' : 'bg-warning'}`}>
+                                                                        {g.grade}/10
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="badge bg-secondary rounded-pill">Sin calificar</span>
+                                                                )}
+                                                            </td>
+                                                            <td className="text-secondary small">{g.feedback || '-'}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+
+                    {!loading && grades.length === 0 && (
+                        <div className="glass-card p-5 text-center text-muted">No tienes calificaciones registradas aún.</div>
+                    )}
                 </div>
             </div>
         );
@@ -48,14 +95,13 @@ export default function Calificaciones({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <BackButton navigation={navigation} />
             <Text style={styles.title}>Calificaciones</Text>
             <FlatList
                 data={grades}
                 keyExtractor={(i) => String(i.id)}
                 renderItem={({ item }) => (
                     <View style={styles.card}>
-                        <Text style={styles.cardTitle}>{item.activity}</Text>
+                        <Text style={styles.cardTitle}>{item.tarea_title}</Text>
                         <Text>Nota: {item.grade}</Text>
                         <Text>Feedback: {item.feedback}</Text>
                     </View>

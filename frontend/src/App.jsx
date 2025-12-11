@@ -16,6 +16,7 @@ import Footer from './components/Footer.jsx';
 
 import Calificaciones from './screens/Calificaciones.jsx';
 import Participantes from './screens/Participantes.jsx';
+import TaskSubmissions from './screens/TaskSubmissions.jsx';
 
 // Minimal in-memory router to use on web (avoids react-navigation dependency)
 const ROUTES = {
@@ -31,6 +32,7 @@ const ROUTES = {
   SubmitTarea,
   Calificaciones,
   Participantes,
+  TaskSubmissions,
 };
 
 export default function App() {

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import showToast from '../utils/toast';
-import BackButton from '../components/BackButton.jsx';
 import axios from '../services/api';
 
 export default function CreateTarea({ navigation, route }) {
   const [title, setTitle] = useState('');
   const [instructions, setInstructions] = useState('');
   const [file, setFile] = useState(null);
+  const [unit, setUnit] = useState('1');
   const [loading, setLoading] = useState(false);
   const aulaId = (route && route.params && route.params.aulaId) || null;
   const aulaTitle = (route && route.params && route.params.aulaTitle) || null;
@@ -53,6 +53,7 @@ export default function CreateTarea({ navigation, route }) {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('instructions', instructions);
+      formData.append('unit', unit);
       if (file) formData.append('attached_file', file);
 
       const res = await axios.post('/tareas/', formData);
@@ -103,6 +104,16 @@ export default function CreateTarea({ navigation, route }) {
                   <button className="btn btn-sm btn-outline-secondary rounded-pill" onClick={() => navigation.goBack()}>✕ Cancelar</button>
                 </div>
                 {aulaTitle && <p className="text-primary small mb-3">Para: {aulaTitle}</p>}
+
+                <div className="mb-3">
+                  <label className="form-label text-secondary small">Unidad</label>
+                  <select className="form-select" value={unit} onChange={(e) => setUnit(e.target.value)}>
+                    <option value="1">Unidad 1: Metodologías</option>
+                    <option value="2">Unidad 2: Normativas</option>
+                    <option value="3">Unidad 3: Calidad</option>
+                    <option value="4">Unidad 4: Gestión</option>
+                  </select>
+                </div>
 
                 <div className="mb-3">
                   <label className="form-label text-secondary small">Título</label>

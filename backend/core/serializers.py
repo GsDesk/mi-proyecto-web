@@ -65,11 +65,20 @@ class TareaSerializer(serializers.ModelSerializer):
 
 class SubmissionSerializer(serializers.ModelSerializer):
 	student = serializers.ReadOnlyField(source='student.username')
-	tarea = serializers.ReadOnlyField(source='tarea.title')
+	tarea_title = serializers.ReadOnlyField(source='tarea.title')
+	unit = serializers.ReadOnlyField(source='tarea.unit')
 
 	class Meta:
 		model = Submission
 		fields = '__all__'
+		extra_kwargs = {
+			'tarea': {'required': False} # handled in view
+		}
+
+class SubmissionGradeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Submission
+        fields = ['grade', 'feedback']
 
 
 

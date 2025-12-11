@@ -21,4 +21,9 @@ urlpatterns = [
     
     # Reports
     path('student/report/', views.StudentReportView.as_view(), name='student-report'),
+
+    # Grading
+    path('tareas/<int:pk>/submissions/', views.TaskSubmissionsList.as_view(), name='task-submissions'),
+    path('submissions/<int:pk>/grade/', views.SubmissionGradeUpdate.as_view(), name='grade-submission'),
+    path('my-grades/', views.MySubmissionsList.as_view(), name='my-grades'),
 ]

@@ -97,22 +97,30 @@ export default function Tareas({ navigation, route }) {
                       )}
 
                       {((typeof window !== 'undefined' && localStorage.getItem('role')) || null) === 'teacher' && (
-                        <button
-                          className="btn btn-sm btn-outline-danger rounded-pill px-3"
-                          onClick={async () => {
-                            if (window.confirm('¿Estás seguro de eliminar esta tarea?')) {
-                              try {
-                                await axios.delete(`/tareas/${item.id}/`);
-                                fetchTareas();
-                              } catch (e) {
-                                console.error(e);
-                                alert('Error al eliminar');
+                        <div className="d-flex gap-2">
+                          <button
+                            className="btn btn-sm btn-info rounded-pill px-3 text-white"
+                            onClick={() => navigation.navigate('TaskSubmissions', { tareaId: item.id, tareaTitle: item.title })}
+                          >
+                            👁️ Ver Entregas
+                          </button>
+                          <button
+                            className="btn btn-sm btn-outline-danger rounded-pill px-3"
+                            onClick={async () => {
+                              if (window.confirm('¿Estás seguro de eliminar esta tarea?')) {
+                                try {
+                                  await axios.delete(`/tareas/${item.id}/`);
+                                  fetchTareas();
+                                } catch (e) {
+                                  console.error(e);
+                                  alert('Error al eliminar');
+                                }
                               }
-                            }
-                          }}
-                        >
-                          🗑️ Eliminar
-                        </button>
+                            }}
+                          >
+                            🗑️ Eliminar
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
