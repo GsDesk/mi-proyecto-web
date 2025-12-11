@@ -8,6 +8,7 @@ export default function Register({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('student');
+  const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState(null);
 
   const handleRegister = async () => {
@@ -18,8 +19,13 @@ export default function Register({ navigation }) {
       return;
     }
 
+    if (role === 'teacher' && !accessCode) {
+      setError('El código de docente es obligatorio');
+      return;
+    }
+
     try {
-      const res = await api.post('/auth/register/', { username, password, role });
+      const res = await api.post('/auth/register/', { username, password, role, access_code: accessCode });
       console.log(res.data);
       showToast('Registro', 'Usuario creado con éxito', 'success');
       navigation.navigate('Login');
@@ -100,6 +106,20 @@ export default function Register({ navigation }) {
                     <option value="teacher">Docente</option>
                   </select>
                 </div>
+
+                {role === 'teacher' && (
+                  <div className="mb-4 animate__animated animate__fadeIn">
+                    <label className="form-label text-danger small fw-bold">🔒 Código de Acceso Docente</label>
+                    <input
+                      type="password"
+                      className="form-control form-control-lg border-danger"
+                      placeholder="Ingresa la clave maestra"
+                      value={accessCode}
+                      onChange={(e) => setAccessCode(e.target.value)}
+                    />
+                    <div className="form-text text-muted small">Solo personal autorizado.</div>
+                  </div>
+                )}
 
                 {error && <div className="alert alert-danger py-2 small">{error}</div>}
 

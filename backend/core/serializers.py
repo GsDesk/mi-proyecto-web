@@ -6,13 +6,22 @@ from .models import Profile, Tarea, Submission
 class RegisterSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True)
 	role = serializers.ChoiceField(choices=Profile.ROLE_CHOICES, write_only=True, required=False)
+	access_code = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
 	class Meta:
 		model = User
-		fields = ('id', 'username', 'password', 'role')
+		fields = ('id', 'username', 'password', 'role', 'access_code')
+
+	def validate(self, data):
+		if data.get('role') == 'teacher':
+			# SECURITY CHECK: Master key for teachers
+			if data.get('access_code') != 'DOCENTE-GOLDEN-2025':
+				raise serializers.ValidationError({"access_code": "¡Código de acceso denegado! No tienes autorización para ser Docente."})
+		return data
 
 	def create(self, validated_data):
 		role = validated_data.pop('role', 'student')
+		validated_data.pop('access_code', None) # Remove security code, we don't need to store it
 		if User.objects.filter(username=validated_data['username']).exists():
 			raise serializers.ValidationError({"username": ["Este nombre de usuario ya está en uso."]})
 		
