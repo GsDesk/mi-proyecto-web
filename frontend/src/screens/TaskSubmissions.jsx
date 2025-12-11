@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet, Linking } from 'react-native';
-import axios from '../services/api';
+import axios, { API_BASE } from '../services/api';
 import showToast from '../utils/toast';
 
 export default function TaskSubmissions({ navigation, route }) {
@@ -55,12 +55,12 @@ export default function TaskSubmissions({ navigation, route }) {
 
     const getDownloadUrl = (fileUrl) => {
         if (!fileUrl) return '#';
-        // Extract the path after /media/ regardless of whether it's absolute or relative
         let path = fileUrl;
         if (fileUrl.includes('/media/')) {
             path = fileUrl.split('/media/')[1];
         }
-        return `${window.location.origin}/api/download/?path=${path}`;
+        // API_BASE already includes '/api'
+        return `${API_BASE}/download/?path=${path}`;
     };
 
     if (typeof document !== 'undefined') {
