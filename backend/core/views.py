@@ -196,6 +196,17 @@ class DownloadFileView(APIView):
         if os.path.exists(file_path) and os.path.isfile(file_path):
             # Check for preview mode
             is_preview = request.GET.get('preview') == 'true'
-            return FileResponse(open(file_path, 'rb'), as_attachment=not is_preview)
+            response = FileResponse(open(file_path, 'rb'), as_attachment=not is_preview)
+            
+            # Force allow framing
+            if is_preview:
+                response["X-Frame-Options"] = "ALLOWALL"  # For older browsers/compatibility
+                # Remove restrictive headers if Django adds them
+                if response.has_header("X-Frame-Options"):
+                    del response["X-Frame-Options"]
+                if response.has_header("Content-Security-Policy"):
+                     del response["Content-Security-Policy"]
+            
+            return response
         
         raise Http404(f"Archivo no encontrado: {file_path}")
