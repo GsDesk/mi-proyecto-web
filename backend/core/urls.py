@@ -18,4 +18,7 @@ urlpatterns = [
     # Profile for frontend to check role
     path('auth/profile/', views.ProfileView.as_view(), name='profile'),
     path('users/', views.UserListView.as_view(), name='user-list'),
+    
+    # Reports
+    path('student/report/', views.StudentReportView.as_view(), name='student-report'),
 ]
