@@ -86,7 +86,7 @@ export default function TaskSubmissions({ navigation, route }) {
                                                 {sub.file && (
                                                     <div className="mb-3">
                                                         <a
-                                                            href={sub.file.startsWith('http') ? sub.file : `${window.location.origin}/api/media/${sub.file.split('/media/').pop()}`}
+                                                            href={sub.file.startsWith('http') ? sub.file : `${window.location.origin}/api/download/?path=${sub.file.replace(/^\/?media\//, '')}`}
                                                             target="_blank"
                                                             className="btn btn-sm btn-outline-info rounded-pill"
                                                             rel="noreferrer"

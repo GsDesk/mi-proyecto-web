@@ -76,7 +76,7 @@ export default function Tareas({ navigation, route }) {
                       {item.attached_file && (
                         <a
                           className="btn btn-sm btn-outline-light rounded-pill"
-                          href={item.attached_file.startsWith('http') ? item.attached_file : `${window.location.origin}/api${item.attached_file}`}
+                          href={item.attached_file.startsWith('http') ? item.attached_file : `${window.location.origin}/api/download/?path=${item.attached_file.replace(/^\/?media\//, '')}`}
                           target="_blank"
                           rel="noreferrer"
                         >
