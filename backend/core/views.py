@@ -200,12 +200,12 @@ class DownloadFileView(APIView):
             
             # Force allow framing
             if is_preview:
-                response["X-Frame-Options"] = "ALLOWALL"  # For older browsers/compatibility
-                # Remove restrictive headers if Django adds them
-                if response.has_header("X-Frame-Options"):
-                    del response["X-Frame-Options"]
-                if response.has_header("Content-Security-Policy"):
-                     del response["Content-Security-Policy"]
+                # Modern standard for allowing iframes
+                response["Content-Security-Policy"] = "frame-ancestors *"
+                # Legacy fallback
+                response["X-Frame-Options"] = "ALLOWALL" 
+                # CORS just in case
+                response["Access-Control-Allow-Origin"] = "*"
             
             return response
         
