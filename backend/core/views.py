@@ -179,6 +179,11 @@ from django.conf import settings
 class DownloadFileView(APIView):
     def get(self, request, path, format=None):
         file_path = os.path.join(settings.MEDIA_ROOT, path)
+        print(f"DEBUG DOWNLOAD: Request path: {path}")
+        print(f"DEBUG DOWNLOAD: MEDIA_ROOT: {settings.MEDIA_ROOT}")
+        print(f"DEBUG DOWNLOAD: Full path: {file_path}")
+        print(f"DEBUG DOWNLOAD: Exists? {os.path.exists(file_path)}")
+        
         if os.path.exists(file_path):
             return FileResponse(open(file_path, 'rb'), as_attachment=False)
-        raise Http404("Archivo no encontrado en el servidor. Nota: En Render Free, los archivos subidos se borran al reiniciar.")
+        raise Http404(f"Archivo no encontrado: {file_path}")
