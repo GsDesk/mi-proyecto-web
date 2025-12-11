@@ -170,3 +170,15 @@ class StudentReportView(APIView):
         # present the option to save the file.
         buffer.seek(0)
         return HttpResponse(buffer, content_type='application/pdf')
+
+
+from django.http import FileResponse, Http404
+import os
+from django.conf import settings
+
+class DownloadFileView(APIView):
+    def get(self, request, path, format=None):
+        file_path = os.path.join(settings.MEDIA_ROOT, path)
+        if os.path.exists(file_path):
+            return FileResponse(open(file_path, 'rb'), as_attachment=False)
+        raise Http404("Archivo no encontrado en el servidor. Nota: En Render Free, los archivos subidos se borran al reiniciar.")
