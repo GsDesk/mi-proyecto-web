@@ -1,29 +1,17 @@
 #!/bin/sh
 set -e
 
-# Wait for Postgres to be ready
-python - <<'PY'
-import socket, time, os
-host = os.environ.get('DB_HOST', 'db')
-port = int(os.environ.get('DB_PORT', 5432))
-delay = 1
-while True:
-    try:
-        s = socket.create_connection((host, port), 2)
-        s.close()
-        break
-    except Exception:
-        print('Waiting for Postgres...')
-        time.sleep(delay)
-PY
+echo "Starting deployment script..."
 
-# Apply migrations
+# Simple wait to ensure DB is likely up (Render usually handles this, but 5s safety margin)
+echo "Waiting 5s for DB..."
+sleep 5
+
+echo "Applying migrations..."
 python manage.py migrate --noinput
 
-# Create superuser if credentials provided (optional)
-if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ] && [ -n "$DJANGO_SUPERUSER_EMAIL" ]; then
-  python manage.py createsuperuser --noinput || true
-fi
+echo "Collecting static files (if any)..."
+# python manage.py collectstatic --noinput || true  <-- Descomentar si usas static files en backend
 
-# Start gunicorn
+echo "Starting Gunicorn..."
 exec gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}
