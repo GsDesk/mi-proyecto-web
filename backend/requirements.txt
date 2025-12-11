@@ -6,3 +6,4 @@ gunicorn
 python-dotenv
 django-cors-headers
 reportlab
+whitenoise

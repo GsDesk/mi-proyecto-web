@@ -24,6 +24,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
 	'corsheaders.middleware.CorsMiddleware',
 	'django.middleware.security.SecurityMiddleware',
+	'whitenoise.middleware.WhiteNoiseMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
@@ -91,3 +92,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# WhiteNoise configuration
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+WHITENOISE_use_finders = True
+WHITENOISE_ROOT = BASE_DIR / 'media' 
+# This tells WhiteNoise to look for files in media folder too (hacky but works for Render ephemeral)
